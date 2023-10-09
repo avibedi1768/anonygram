@@ -6,7 +6,7 @@ import '../css/signup.css'
 
 //import firebase 
 import { db } from '../../firebase';
-import { set, ref } from 'firebase/database';
+import { get, set, ref } from 'firebase/database';
 
 function Signup() {
 
@@ -14,31 +14,57 @@ function Signup() {
   document.title = 'Signup'
   let [user, setUser] = useState('')
   let [pass, setPass] = useState('')
-  
-  function send() {
+  let [passChecker, setPassChecker] = useState('')
+
+  function check() {
     console.log(user + ' ' + pass)
 
-    if (user == '' || pass == '') {
-      alert('Please enter data');
+    //check for empty values
+    if (user === '' || pass === '') {
+      alert('Please enter valid info');
       return;
     }
 
-    else {
-      set(ref(db, 'username/' + user + '/credentials/'), {
-        password: pass,
-        username: user,
-        number: 0
-      })
-
-      alert('signup successful')
-
-      async function delay() {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        window.location.href = '/login';
+    //check for repeating username
+    get(ref(db, 'username/' + user))
+    .then((snapshot)=>{
+      //username already exists
+      if(snapshot.exists()){
+        alert('Username already exists. Please try some other username!')
+        return;
       }
+      //unique username
+      else{
+        send()
+      }
+    })
 
-      delay();
+  }
 
+  //all checks passed
+  function send() {
+    set(ref(db, 'username/' + user + '/credentials/'), {
+      password: pass,
+      username: user,
+      number: 0
+    })
+
+    alert('signup successful')
+
+    async function delay() {
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      window.location.href = '/login'
+    }
+
+    delay()
+  }
+
+  //check pass length
+  function checkPassLength() {
+    if (pass.length < 7) {
+      setPassChecker('Password should be at least 8 letters long')
+    } else {
+      setPassChecker('')
     }
   }
 
@@ -56,8 +82,9 @@ function Signup() {
           <br />
           <p>HEY! {user}</p>
           <br />
-          <input type="password" placeholder="Password" className="inp" onChange={(e) => setPass(e.target.value)} />
+          <input type="password" placeholder="Password" className="inp" onChange={(e) => { setPass(e.target.value); checkPassLength() }} />
           <i className="far fa-eye" id="togglePassword" style={style1}></i>
+          <p>{passChecker}</p>
 
           <br /><br />
           {/* <input
@@ -69,7 +96,7 @@ function Signup() {
           <i className="far fa-eye" id="retogglePassword" style={style1}></i> */}
 
           <br /><br /><br />
-          <button type="submit" id="btn" onClick={send}>
+          <button type="submit" id="btn" onClick={check}>
             Go <img id="white_arrow" src={Arrow1} />
             <img id="black_arrow" src={Arrow2} />
           </button>

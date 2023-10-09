@@ -13,7 +13,6 @@ function Login() {
   //title
   document.title = 'Login'
 
-  // let abc = 'hahahaha'
   let [user, setUser] = useState('');
   let [pass, setPass] = useState('');
 
@@ -26,8 +25,9 @@ function Login() {
           console.log(p);
           //if password matches
           if (pass == p) {
+            window.localStorage.setItem('user', user)
             alert("password matches");
-            window.location.href = '/main#' + user;
+            window.location.href = '/profile#' + user;
           } else {
             alert("password does not match. plz try again");
           }

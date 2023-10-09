@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import Arrow1 from '../imgs/Arrow 1.png'
 import Arrow2 from '../imgs/Arrow 2.png'
 import '../css/main.css'
+import CopyLink from './CopyLink'
 
 //import firebase
 import { db } from '../../firebase'
@@ -87,6 +88,9 @@ function Main() {
           <img id="black_arrow" src={Arrow2} /> </button>
         <br />
       </div>
+
+      <p>Get your own AskMeOut Link!</p>
+      <button onClick={()=>{window.location.href='/signup'}}>Click Me</button>
     </div>
   )
 }
