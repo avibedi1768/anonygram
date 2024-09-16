@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import CopyLink from './CopyLink'
+import Footer from './Footer'
+import SingleMessage from './SingleMessage'
 
 //import firebase
 import { db } from '../../firebase'
 import { get, ref } from 'firebase/database'
 
+import { shareMessage } from './shareMessage'
+import './../css/profile.css'
+
 function Profile() {
   let sharableLink = window.location.href.replace('profile', 'main')
 
   let [msgs, setMsgs] = useState([]);
-  let user = window.location.href.split('#')[1];
+  let user = window.location.href.split('?=')[1];
 
   //check in local storage if user is logged in:
   let username = localStorage.getItem('user')
@@ -48,23 +53,39 @@ function Profile() {
   }
 
   return (
-    <div>
-      <h1>Hey {user}!</h1>
+    <div className='profile-container'>
+      <div className="profile-top">
+        <h1>Hey {user}!</h1>
 
-      {/* links */}
-      <CopyLink sharableLink={sharableLink} />
-      <p>You can send this link to your firends:</p>
+        {/* links */}
+        <CopyLink sharableLink={sharableLink} />
+        <p>You can send this link to your firends:</p>
+      </div>
+      <h1 style={{ textAlign: 'center' }}>Here are your messages!</h1>
+      <div className="msgs-container">
+        {msgs.length > 0 ? (
+          <ul>
+            {msgs.map((msg, index) => (
+              <li key={index}>
+                {/* {msg} &nbsp;&nbsp; */}
+                <button
+                  onClick={() => shareMessage(msg)}
+                  className='profile-btn'
+                >
+                  Share?
+                </button>
+                <SingleMessage msg={msg} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No Messages :(</p>
+        )}
+      </div>
 
-      <h1>Here are your messages!</h1>
-      {msgs.length > 0 ? (
-        <ul>
-          {msgs.map((msg, index) => (
-            <li key={index}>{msg}</li>
-          ))}
-        </ul>
-      ) : (
-        <p>Loading...</p>
-      )}
+      <hr style={{ margin: '5vh 30vh', opacity: '0.4' }} />
+
+      <Footer />
 
     </div>
   )
